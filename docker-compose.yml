@@ -6,8 +6,9 @@ services:
     restart: unless-stopped
     volumes:
       - mongo-data:/data/db
-    ports:
-      - "27017:27017"
+    # Railway handles networking internally → no need to expose port
+    environment:
+      MONGO_INITDB_DATABASE: helpdesk
 
   server:
     build: ./server
@@ -17,7 +18,7 @@ services:
     environment:
       PORT: 8080
       MONGO_URI: mongodb://mongo:27017/helpdesk
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
       STUB_MODE: ${STUB_MODE:-true}
       AUTO_CLOSE_ENABLED: ${AUTO_CLOSE_ENABLED:-true}
       CONFIDENCE_THRESHOLD: ${CONFIDENCE_THRESHOLD:-0.78}
@@ -30,6 +31,7 @@ services:
     ports:
       - "5173:5173"
     environment:
+      # IMPORTANT: replace with your Railway server URL after first deploy
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
     depends_on:
       - server
