@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   mongo:
     image: mongo:6
@@ -14,12 +15,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PORT=8080
-      - MONGO_URI=mongodb://mongo:27017/helpdesk
-      - JWT_SECRET=change-me
-      - STUB_MODE=true
-      - AUTO_CLOSE_ENABLED=true
-      - CONFIDENCE_THRESHOLD=0.78
+      PORT: 8080
+      MONGO_URI: mongodb://mongo:27017/helpdesk
+      JWT_SECRET: ${JWT_SECRET}
+      STUB_MODE: ${STUB_MODE:-true}
+      AUTO_CLOSE_ENABLED: ${AUTO_CLOSE_ENABLED:-true}
+      CONFIDENCE_THRESHOLD: ${CONFIDENCE_THRESHOLD:-0.78}
     depends_on:
       - mongo
 
@@ -27,7 +28,9 @@ services:
     build: ./client
     restart: unless-stopped
     ports:
-      - "3000:5173"
+      - "5173:5173"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
     depends_on:
       - server
 
