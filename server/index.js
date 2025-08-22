@@ -5,9 +5,12 @@ import cors from "cors";
 import morgan from "morgan";
 import path from "path";
 import   userRoutes  from './routes/user.js'
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRoutes from "./routes/auth.js";
 import kbRoutes from "./routes/kb.js";
@@ -19,6 +22,14 @@ import auditRoutes from "./routes/audit.js";
 app.use(express.json({ limit: "2mb" }));
 app.use(cors());
 app.use(morgan("dev"));
+
+// Serve static files from /public
+app.use(express.static(path.join(__dirname, "public")));
+
+// Fallback to index.html for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 // API
 app.use("/api/users", userRoutes);
